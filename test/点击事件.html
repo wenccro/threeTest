@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TestClickEvent</title>
+</head>
+<body>
+<!--<script src="jquery.min.js"></script>-->
+<script src="./build/three.js"></script>
+<script src="./examples/js/controls/OrbitControls.js"></script>
+<script src="./examples/js/effects/AnaglyphEffect.js"></script>
+<script type="text/javascript">
+    var scene,camera,renderer,
+        controls,effect,light;
+
+    init();//开始初始化
+
+    //将需要初始化的放在该方法中统一初始化
+    function init(){
+        initScene();//初始化场景
+        initCamera();//初始化相机
+        initRenender();//初始化渲染器
+        initLight();//初始化光线
+        initOthers();//初始化其他参数
+        setWindown();//窗体的设置
+        setEventsMouse();//鼠标事件的定义
+        setControl();//设置鼠标控制
+        setKeyEvents();//定义键盘按键事件
+        setGeometrys();//定义物体
+    }
+
+    //初始化场景
+    function initScene(){
+        scene = new THREE.Scene();//创建场景
+    }
+
+    //初始化相机
+    function  initCamera(){
+        //创建一个摄像机对象
+        camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z=3;//设置相机的位置
+    }
+
+    //初始化渲染器
+    function initRenender(){
+        //创建渲染器
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    //其他内容初始化
+    function initOthers(){
+        document.body.appendChild(renderer.domElement);//渲染到浏览器
+    }
+
+    //定义窗口的设置
+    function setWindown(){
+        //加入事件监听器,窗口自适应
+        window.addEventListener('resize', function(){
+            var width = window.innerWidth;
+            var height = window.innerHeight;
+            renderer.setSize(width,height);
+            camera.aspect = width/height;
+            camera.updateProjectionMatrix();
+        });
+    }
+
+    //定义鼠标事件
+    function setEventsMouse(){
+        //点击了鼠标左键
+        window.addEventListener( 'click', function(e){
+            if(e.button===0){
+                console.log("点击了鼠标左键");
+            }
+        } );
+
+        //点击了鼠标右键
+        window.addEventListener( 'contextmenu', function(e){
+            if(e.button===2){
+                console.log("点击了鼠标右键");
+            }
+        } );
+
+        //鼠标移动坐标2D坐标
+        window.addEventListener( 'mousemove', function(e){
+            console.log('x:'+e.x);
+            console.log('y:'+e.y);
+        } );
+
+    }
+
+    //定义键盘按键事件
+    function setKeyEvents(){
+        window.addEventListener('keydown',function(e){
+            console.log(e);
+        });
+    }
+
+    //定义控制
+    function setControl(){
+        //轨道控制 镜头的移动
+        controls = new THREE.OrbitControls(camera,renderer.document);
+
+        //物体3D化
+        effect = new THREE.AnaglyphEffect(renderer);
+        effect.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    //定义物体
+    function setGeometrys(){
+        //创建形状 BoxGeometry
+        var geometry = new THREE.BoxGeometry(1,1,1);
+        var cubeMaterial = [
+            //右
+            new THREE.MeshLambertMaterial({color:0xFFFFFF,side:THREE.DoubleSide}),
+            //左
+            new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('images/2.png') ,side:THREE.DoubleSide}),
+            //上
+            new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('images/3.png') ,side:THREE.DoubleSide}),
+            //下
+            new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('images/4.png') ,side:THREE.DoubleSide}),
+            //前
+            new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('images/5.png') ,side:THREE.DoubleSide}),
+            //后
+            new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('images/6.png') ,side:THREE.DoubleSide})
+
+        ];
+        //创建材料   wireframe是否使用线条
+        //var material = new THREE.MeshBasicMaterial({color:0xFFFFFF,wireframe:true});
+        var material = new THREE.MeshFaceMaterial(cubeMaterial);
+
+        //将材料和形状结合
+        var cube = new THREE.Mesh(geometry,material);
+
+        //物体加入场景中
+        scene.add(cube);
+
+    }
+
+    //初始化光线
+    function initLight(){
+        //5.    光（Light）光源的基类。
+        light = new THREE.Light(0xFFFFFF,1.0);
+        scene.add(light);//光线加入场景中
+    }
+
+    //逻辑
+    var update=function(){
+        //物体随着XY轴旋转
+        //cube.rotation.x +=0.01;
+        //cube.rotation.y += 0.005;
+    }
+
+    //绘画渲染
+    var render=function() {
+        //renderer.render(scene,camera);
+        effect.render(scene,camera);//渲染3D画面
+    }
+
+    //循环运行update，render
+    var loop=function() {
+        requestAnimationFrame(loop);
+        update();
+        render();
+    }
+
+    loop();//循环开始
+</script>
+</body>
+</html>
